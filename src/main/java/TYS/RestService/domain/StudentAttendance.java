@@ -8,13 +8,11 @@ public class StudentAttendance {
     public Attendance getAttendance() {
         return attendance;
     }
-
     public Student getStudent() {
         return student;
     }
-
-    public String getIsAbsenceToString() {
-        return isAbsence ? "Var" : "Yok";
+    public Boolean getIsAbsence(){
+        return isAbsence;
     }
 
     public StudentAttendance(Student student, Attendance attendance, Boolean isAbsence) {
@@ -26,9 +24,9 @@ public class StudentAttendance {
     @Override
     public String toString() {
         return "StudentAttendance{" +
-                "student=" + student +
-                ", attendance=" + attendance +
-                ", isAbsence=" + isAbsence +
+                "student=" + getStudent() +
+                ", attendance=" + getAttendance() +
+                ", isAbsence=" + getIsAbsence() +
                 '}';
     }
 }
