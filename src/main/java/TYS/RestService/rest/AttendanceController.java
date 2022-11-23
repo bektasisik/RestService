@@ -4,6 +4,7 @@ import TYS.RestService.domain.Attendance;
 import TYS.RestService.domain.StudentAttendance;
 import TYS.RestService.dto.AttendanceCreateDTO;
 import TYS.RestService.service.AttendanceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,11 +13,8 @@ import java.util.List;
 @RequestMapping("/api/v1/attendances")
 public class AttendanceController {
 
+    @Autowired
     AttendanceService attendanceService;
-
-    public AttendanceController(AttendanceService attendanceService) {
-        this.attendanceService = attendanceService;
-    }
 
     @GetMapping("/{id}")
     public Attendance getAttendance(@PathVariable int id){

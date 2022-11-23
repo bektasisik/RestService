@@ -3,6 +3,7 @@ package TYS.RestService.rest;
 import TYS.RestService.domain.Student;
 import TYS.RestService.dto.StudentCreateDTO;
 import TYS.RestService.service.StudentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.instrument.IllegalClassFormatException;
@@ -11,11 +12,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/students")
 public class StudentController {
+    @Autowired
     StudentService studentService;
-
-    public StudentController(StudentService studentService) {
-        this.studentService = studentService;
-    }
 
     @GetMapping
     public List<Student> getStudents() {

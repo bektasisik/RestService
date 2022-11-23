@@ -2,6 +2,7 @@ package TYS.RestService.rest;
 
 import TYS.RestService.domain.StudentAttendance;
 import TYS.RestService.service.StudentAttendanceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,24 +11,24 @@ import java.util.List;
 @RequestMapping("/api/v1/student-attendances")
 public class StudentAttendanceController {
 
-    StudentAttendanceService studentAttendanceService;
-
-    public StudentAttendanceController(StudentAttendanceService studentAttendanceService) {
-        this.studentAttendanceService = studentAttendanceService;
-    }
+    @Autowired
+    private StudentAttendanceService studentAttendanceService;
 
     @GetMapping
     public List<StudentAttendance> getStudentAttendance(){
         return studentAttendanceService.getStudentAttendances();
     }
 
-    @GetMapping("/{attendanceId}/students")
-    public List<StudentAttendance> getStudentsByAttendanceId(@PathVariable int attendanceId) {
-        return studentAttendanceService.getStudenstsByAttendanceId(attendanceId);
+    @GetMapping("/searchByAttendance")
+    public List<StudentAttendance> getStudentsByAttendanceId(@RequestParam("attendanceId") String attendanceId) {
+        return studentAttendanceService.getStudenstsByAttendanceId(Integer.parseInt(attendanceId));
     }
 
-    @GetMapping("/{studentId}/attendances")
-    public List<StudentAttendance> getAttendancesByStudentId(@PathVariable int studentId) {
-        return studentAttendanceService.getAttendancesByStudentId(studentId);
+    @GetMapping("/searchByStudent")
+    public List<StudentAttendance> getAttendancesByStudentId(@RequestParam("studentId") String studentId) {
+        return studentAttendanceService.getAttendancesByStudentId(Integer.parseInt(studentId));
     }
 }
+
+//queryString
+//pathVariable
