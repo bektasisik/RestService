@@ -3,7 +3,6 @@ package TYS.RestService.service;
 import TYS.RestService.domain.Attendance;
 import TYS.RestService.domain.StudentAttendance;
 import TYS.RestService.dto.AttendanceCreateDTO;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,21 +10,17 @@ import java.util.List;
 
 @Service
 public class AttendanceService {
-    private List<Attendance> attendances = new ArrayList<>();
+    private final List<Attendance> attendances = new ArrayList<>();
     private int sequence = 1;
-    private List<StudentAttendance> studentAttendances = new ArrayList<>();
     private final StudentService studentService;
-
-    public AttendanceService(StudentService studentService) {
+    private final StudentAttendanceService studentAttendanceService;
+    public AttendanceService(StudentService studentService, StudentAttendanceService studentAttendanceService) {
         this.studentService = studentService;
+        this.studentAttendanceService = studentAttendanceService;
     }
 
     public int getSequence() {
         return sequence++;
-    }
-
-    public List<StudentAttendance> getStudentAttendances() {
-        return studentAttendances;
     }
 
     public List<Attendance> getAttendances() {
@@ -33,15 +28,8 @@ public class AttendanceService {
     }
 
     public Attendance getAttendance(int id) {
-        return attendances.stream().filter(attendance -> attendance.getId() == id).findFirst().orElseThrow();
-    }
-
-    public List<StudentAttendance> getAttendanceById(int id) {
-        return studentAttendances.stream().filter(studentAttendance -> studentAttendance.getAttendance().getId() == id).toList();
-    }
-
-    public List<StudentAttendance> getAttendanceByStudentId(int studentId) {
-        return studentAttendances.stream().filter(studentAttendance -> studentAttendance.getStudent().getId() == studentId).toList();
+        return attendances.stream().filter(
+                attendance -> attendance.getId() == id).findFirst().orElseThrow();
     }
 
     public boolean isEmpty(String prayertime) {
@@ -50,7 +38,6 @@ public class AttendanceService {
 
     public void takeAttendance(AttendanceCreateDTO attendanceCreateDTO) throws NullPointerException {
         if (!isEmpty(attendanceCreateDTO.getPrayerTime())) {
-            //todo
             throw new NullPointerException();
         }
         Attendance attendance = new Attendance(getSequence(), attendanceCreateDTO.getPrayerTime());
@@ -58,42 +45,48 @@ public class AttendanceService {
 
         attendanceCreateDTO.getStudentAttendanceDto().forEach(studentAttendanceCreateDto -> {
             StudentAttendance studentAttendance = new StudentAttendance(
-                    studentService.getStudent(studentAttendanceCreateDto.getStudentId()),
+                    this.studentService.getStudent(studentAttendanceCreateDto.getStudentId()),
                     attendance,
                     studentAttendanceCreateDto.getIsAbsence());
             if (!studentAttendanceCreateDto.getIsAbsence()) {
-                studentService.getStudent(studentAttendanceCreateDto.getStudentId()).increaseAbsent();
+                this.studentService.getStudent(studentAttendanceCreateDto.getStudentId()).increaseAbsent();
             }
-            getStudentAttendances().add(studentAttendance);
+            this.studentAttendanceService.getStudentAttendances().add(studentAttendance);
         });
     }
 
-    public void updateAttendance(int id, @NotNull AttendanceCreateDTO attendanceCreateDTO) {
-        getAttendance(id).setPrayerTime(attendanceCreateDTO.getPrayerTime());
+    //todo
+    public void updateAttendance(int id, AttendanceCreateDTO attendanceCreateDTO) {
+        System.out.println(studentAttendanceService.studentAttendances);
+//        this.studentAttendanceService.studentAttendances.clear();
+//        studentAttendanceService.studentAttendances = new StudentAttendance()
 
-        List<StudentAttendance> oldStudentAttendances = getStudentAttendances().stream().filter(
+        Attendance attendance = getAttendance(id);
+        attendance.setPrayerTime(attendanceCreateDTO.getPrayerTime());
+
+        List<StudentAttendance> oldStudentAttendances = this.studentAttendanceService.studentAttendances.stream().filter(
                 studentAttendance -> studentAttendance.getAttendance().getId() == id).toList();
 
-        this.studentAttendances = getStudentAttendances().stream().filter(
+        this.studentAttendanceService.studentAttendances = this.studentAttendanceService.getStudentAttendances().stream().filter(
                 studentAttendance -> studentAttendance.getAttendance().getId() != id).toList();
 
         attendanceCreateDTO.getStudentAttendanceDto().forEach(studentAttendanceCreateDto -> {
-            if (!studentAttendanceCreateDto.getIsAbsence()) {
-                studentService.getStudent(studentAttendanceCreateDto.getStudentId()).increaseAbsent();
-            }
-            getStudentAttendances().add(new StudentAttendance(
-                    studentService.getStudent(studentAttendanceCreateDto.getStudentId()),
+            StudentAttendance studentAttendance = new StudentAttendance(
+                    this.studentService.getStudent(studentAttendanceCreateDto.getStudentId()),
                     getAttendance(id),
-                    studentAttendanceCreateDto.getIsAbsence()));
+                    studentAttendanceCreateDto.getIsAbsence());
+            if (!studentAttendanceCreateDto.getIsAbsence()) {
+                this.studentService.getStudent(studentAttendanceCreateDto.getStudentId()).increaseAbsent();
+            }
+            this.studentAttendanceService.getStudentAttendances().add(studentAttendance);
         });
 
-        List<StudentAttendance> newStudentAttendances = getStudentAttendances().stream().filter(
+        List<StudentAttendance> newStudentAttendances = this.studentAttendanceService.getStudentAttendances().stream().filter(
                 studentAttendance -> studentAttendance.getAttendance().getId() == id).toList();
 
         oldStudentAttendances.forEach(oldStudentAttendance -> {
             StudentAttendance newStudentAttendance = newStudentAttendances.stream().filter(
-                    studentAttendance -> studentAttendance.getStudent().getId() == oldStudentAttendance.getStudent().getId()).findAny().orElseThrow();
-
+                    studentAttendance -> studentAttendance.getStudent().getId() == oldStudentAttendance.getStudent().getId()).findFirst().orElseThrow();
             if (oldStudentAttendance.getIsAbsence() != newStudentAttendance.getIsAbsence()) {
                 if (oldStudentAttendance.getIsAbsence()) {
                     newStudentAttendance.getStudent().increaseAbsent();
@@ -105,14 +98,15 @@ public class AttendanceService {
     }
 
     public void deleteAttendance(int id) {
-        this.studentAttendances.forEach(studentAttendance -> {
-            if (!studentAttendance.getIsAbsence()) {
-                studentAttendance.getStudent().decraseAbsent();
+        this.studentAttendanceService.getStudentAttendances().forEach(studentAttendance -> {
+            if (studentAttendance.getAttendance().getId() == id) {
+                if (!studentAttendance.getIsAbsence()) {
+                    studentAttendance.getStudent().decraseAbsent();
+                }
             }
         });
-        this.attendances = attendances.stream().filter(
-                attendance -> attendance.getId()!=id).toList();
-        this.studentAttendances = studentAttendances.stream().filter(
+        this.attendances.remove(getAttendance(id));
+        this.studentAttendanceService.studentAttendances = this.studentAttendanceService.getStudentAttendances().stream().filter(
                 studentAttendance -> studentAttendance.getAttendance().getId() != id).toList();
     }
 }

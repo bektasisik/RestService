@@ -23,21 +23,6 @@ public class AttendanceController {
         return attendanceService.getAttendance(id);
     }
 
-    @GetMapping("/studentAttendances")
-    public List<StudentAttendance> getStudentAttendance(){
-        return attendanceService.getStudentAttendances();
-    }
-
-    @GetMapping("attendance/{id}")
-    public List<StudentAttendance> getAttendanceById(@PathVariable int id) {
-        return attendanceService.getAttendanceById(id);
-    }
-
-    @GetMapping("student/{studentId}")
-    public List<StudentAttendance> getAttendanceByStudentId(@PathVariable int studentId) {
-        return attendanceService.getAttendanceByStudentId(studentId);
-    }
-
     @GetMapping
     public List<Attendance> getAttendances(){
         return attendanceService.getAttendances();
