@@ -3,6 +3,7 @@ package TYS.RestService.rest;
 import TYS.RestService.domain.StudentAttendance;
 import TYS.RestService.service.StudentAttendanceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,20 +16,8 @@ public class StudentAttendanceController {
     private StudentAttendanceService studentAttendanceService;
 
     @GetMapping
-    public List<StudentAttendance> getStudentAttendance(){
-        return studentAttendanceService.getStudentAttendances();
-    }
-
-    @GetMapping("/searchByAttendance")
-    public List<StudentAttendance> getStudentsByAttendanceId(@RequestParam("attendanceId") String attendanceId) {
-        return studentAttendanceService.getStudenstsByAttendanceId(Integer.parseInt(attendanceId));
-    }
-
-    @GetMapping("/searchByStudent")
-    public List<StudentAttendance> getAttendancesByStudentId(@RequestParam("studentId") String studentId) {
-        return studentAttendanceService.getAttendancesByStudentId(Integer.parseInt(studentId));
+    public List<StudentAttendance> getStudentAttendanceLists(@RequestParam("attendanceId") @Nullable Integer attendanceId,
+                                                             @RequestParam("studentId") @Nullable Integer studentId) {
+        return studentAttendanceService.choseList(attendanceId,studentId);
     }
 }
-
-//queryString
-//pathVariable

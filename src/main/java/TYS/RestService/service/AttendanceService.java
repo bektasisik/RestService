@@ -1,6 +1,7 @@
 package TYS.RestService.service;
 
 import TYS.RestService.domain.Attendance;
+import TYS.RestService.domain.Student;
 import TYS.RestService.domain.StudentAttendance;
 import TYS.RestService.dto.AttendanceCreateDTO;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ public class AttendanceService {
     private int sequence = 1;
     private final StudentService studentService;
     private final StudentAttendanceService studentAttendanceService;
+
     public AttendanceService(StudentService studentService, StudentAttendanceService studentAttendanceService) {
         this.studentService = studentService;
         this.studentAttendanceService = studentAttendanceService;
@@ -44,22 +46,18 @@ public class AttendanceService {
         this.attendances.add(attendance);
 
         attendanceCreateDTO.getStudentAttendanceDto().forEach(studentAttendanceCreateDto -> {
-            StudentAttendance studentAttendance = new StudentAttendance(
-                    this.studentService.getStudent(studentAttendanceCreateDto.getStudentId()),
-                    attendance,
-                    studentAttendanceCreateDto.getIsAbsence());
-            if (!studentAttendanceCreateDto.getIsAbsence()) {
-                this.studentService.getStudent(studentAttendanceCreateDto.getStudentId()).increaseAbsent();
+            Student student = this.studentService.getStudent(studentAttendanceCreateDto.getStudentId());
+            Boolean isAbsence = studentAttendanceCreateDto.getIsAbsence();
+            this.studentAttendanceService.getStudentAttendances().add(new StudentAttendance(student, attendance, isAbsence));
+            if (!isAbsence) {
+                student.increaseAbsent();
             }
-            this.studentAttendanceService.getStudentAttendances().add(studentAttendance);
         });
     }
 
     //todo
     public void updateAttendance(int id, AttendanceCreateDTO attendanceCreateDTO) {
         System.out.println(studentAttendanceService.studentAttendances);
-//        this.studentAttendanceService.studentAttendances.clear();
-//        studentAttendanceService.studentAttendances = new StudentAttendance()
 
         Attendance attendance = getAttendance(id);
         attendance.setPrayerTime(attendanceCreateDTO.getPrayerTime());
@@ -71,14 +69,12 @@ public class AttendanceService {
                 studentAttendance -> studentAttendance.getAttendance().getId() != id).toList();
 
         attendanceCreateDTO.getStudentAttendanceDto().forEach(studentAttendanceCreateDto -> {
-            StudentAttendance studentAttendance = new StudentAttendance(
-                    this.studentService.getStudent(studentAttendanceCreateDto.getStudentId()),
-                    getAttendance(id),
-                    studentAttendanceCreateDto.getIsAbsence());
-            if (!studentAttendanceCreateDto.getIsAbsence()) {
-                this.studentService.getStudent(studentAttendanceCreateDto.getStudentId()).increaseAbsent();
+            Student student = this.studentService.getStudent(studentAttendanceCreateDto.getStudentId());
+            Boolean isAbsence = studentAttendanceCreateDto.getIsAbsence();
+            this.studentAttendanceService.getStudentAttendances().add(new StudentAttendance(student, attendance, isAbsence));
+            if (!isAbsence) {
+                student.increaseAbsent();
             }
-            this.studentAttendanceService.getStudentAttendances().add(studentAttendance);
         });
 
         List<StudentAttendance> newStudentAttendances = this.studentAttendanceService.getStudentAttendances().stream().filter(
