@@ -46,13 +46,4 @@ public class Student {
         this.absent = absent - 1;
     }
 
-    @Override
-    public String toString() {
-        return "Student{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                ", absent=" + absent +
-                '}';
-    }
 }

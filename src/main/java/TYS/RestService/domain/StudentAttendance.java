@@ -20,13 +20,4 @@ public class StudentAttendance {
         this.attendance = attendance;
         this.isAbsence = isAbsence;
     }
-
-    @Override
-    public String toString() {
-        return "StudentAttendance{" +
-                "student=" + getStudent() +
-                ", attendance=" + getAttendance() +
-                ", isAbsence=" + getIsAbsence() +
-                '}';
-    }
 }

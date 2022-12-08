@@ -52,12 +52,11 @@ public class StudentService {
         return false;
     }
 
-    public Student updateStudent(int studentId, @NotNull StudentCreateDTO studentCreateDTO) throws IllegalArgumentException {
+    public void updateStudent(int studentId, @NotNull StudentCreateDTO studentCreateDTO) throws IllegalArgumentException {
         validateStudent(studentCreateDTO.getName(), studentCreateDTO.getSurname());
         Student student = getStudent(studentId);
         student.setName(studentCreateDTO.getName());
         student.setSurname(studentCreateDTO.getSurname());
-        return student;
     }
 
     public void deleteStudent(int studentId) {
