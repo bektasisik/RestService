@@ -13,7 +13,7 @@ public class StudentService {
     private final List<Student> students = new ArrayList<>();
     private int sequence = 1;
 
-    private int getSequence() {
+    public int getSequence() {
         return sequence++;
     }
 
@@ -31,11 +31,10 @@ public class StudentService {
         return students.stream().filter(student -> student.getId() == studentId).findFirst().orElseThrow();
     }
 
-    public Student addStudent(@NotNull StudentCreateDTO studentCreateDTO) throws IllegalArgumentException {
+    public void addStudent(@NotNull StudentCreateDTO studentCreateDTO) throws IllegalArgumentException {
         validateStudent(studentCreateDTO.getName(), studentCreateDTO.getSurname());
         Student student = new Student(getSequence(), studentCreateDTO.getName(), studentCreateDTO.getSurname());
         students.add(student);
-        return student;
     }
 
     private void validateStudent(String name, String surname) throws  IllegalArgumentException {
