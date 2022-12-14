@@ -1,9 +1,11 @@
-package TYS.RestService.BDD.rest.StudentControllerBDD;
+package TYS.RestService.BDD.IntegrationTest.Runner;
 
 import io.cucumber.spring.CucumberContextConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@CucumberContextConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@CucumberContextConfiguration
+@AutoConfigureMockMvc
 public class CucumberSpringConfiguration {
 }
