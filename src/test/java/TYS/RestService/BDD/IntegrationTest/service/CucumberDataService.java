@@ -1,4 +1,4 @@
-package TYS.RestService.BDD.service;
+package TYS.RestService.BDD.IntegrationTest.service;
 
 import TYS.RestService.dto.StudentCreateDTO;
 import org.springframework.beans.factory.annotation.Autowired;

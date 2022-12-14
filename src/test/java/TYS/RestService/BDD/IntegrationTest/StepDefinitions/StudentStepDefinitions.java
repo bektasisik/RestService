@@ -5,7 +5,6 @@ import TYS.RestService.dto.StudentCreateDTO;
 import TYS.RestService.rest.StudentController;
 import TYS.RestService.service.StudentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +30,12 @@ public class StudentStepDefinitions extends CucumberIntegrationTest {
     StudentCreateDTO studentCreateDTO;
     String requestBody;
     @When("Kullanıcı talebenin Adını {string} Soyadını {string} olarak kaydetmek istediğinde")
-    public void kullaniciKoduluTalebeninAdınıSoyadınıOlarakKaydetmekIstediğinde(String arg0, String name, String surname) throws Exception {
+    public void kullaniciKoduluTalebeninAdınıSoyadınıOlarakKaydetmekIstediğinde(String name, String surname) throws Exception {
         studentCreateDTO = new StudentCreateDTO();
         studentCreateDTO.setName(name);
         studentCreateDTO.setSurname(surname);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
         requestBody = objectMapper.writeValueAsString(studentCreateDTO);
 
         result = mockMvc.perform(post("/api/v1/students")
