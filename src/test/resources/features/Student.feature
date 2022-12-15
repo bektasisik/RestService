@@ -3,62 +3,61 @@ Feature: Student CRUD işlemleri
   Scenario: Talebe Ekleme isteğinin başarılı olması ve talebenin listeye eklenmesi
     When Kullanıcı talebenin Adını "Bektaş" Soyadını "Işık" olarak kaydetmek istediğinde
     Then Geriye başarılı status kodu dönmesi
+    Then Talebe listesi toplam 1 adet talebe içermelidir
 
-#  Scenario: Talebeler listesini talep ederken olumlu cevap dönmesi
-#    Given X,Y,Z talebeleri eklenmiş olsun
-#    When Talebe listesi görüntülenmek istendiğinde
-#    Then Geriye 200 http durum kodu dönmesi
-#
-#  Scenario: Talebe Silme işlemi yapıldığında talebenim kaydının silinmesi
-#    Given X,Y,Z talebeleri eklenmiş olsun
-#    When Kullanıcı X adlı talebeyi silmek istediğinde
-#    And Talebe listesinde bulunan Silme tuşuna bastığında
-#    Then Talebe Listesinden X adlı talebe silinniş olmalı
-#    And Talebe Listesi X kişisi olmadan listelenmeli
-#
-#  Scenario: Talebe Güncelleme işlemi yapıldığında güncellemenin başarılı olması ve listede yeni isim soyisimle beklenmesi
-#    Given X,Y,Z talebeleri eklenmiş olsun
-#    When Kullanıcı Y adlı talebeyi güncellemek istediğinde
-#    And Talebe listesinde bulunan güncelleme butonuna basar
-#    And Güncellenen yeni Ad Soyad kıssımlarını girer
-#    And Güncelle tuşuna basar
-#    Then Talebenin yeni Ad ve Soyadı listeye aynı okul numrası ile güncellenir
-#    And Talebe listesi Y adlı talebenin yeni ad soyadı ile listenmeli
-#
-#  Scenario Outline: talebe eklemesindeki hatalı senaryolar
-#    When "<adi>" adı "<soyadi>" soyadı ile talebe eklenmek istendiğinde
+  Scenario Outline: Talebeler listesini talep ederken olumlu cevap dönmesi
+    Given "<adi>" adi "<soyadi>" soyadi ile talebeler eklenmiş olsun
+    When Talebe listesi görüntülenmek istediğinde
+    Then Geriye başarılı status kodu dönmesi
+    Examples:
+      | adi         | soyadi |
+      | Veli        | Cam    |
+      | Abdurrahman | Kutlu  |
+      | Emre        | Yavuz  |
+      | Bektas      | Isik   |
+
+  Scenario: Talebe Güncelleme işlemi yapıldığında güncellemenin başarılı olması
+    Given Aşağıdaki talebeler eklenmiş olsun
+      | id | adi         | soyadi |
+      | 1  | Veli        | Cam    |
+      | 2  | Abdurrahman | Kutlu  |
+      | 3  | Emre        | Yavuz  |
+      | 4  | Bektas      | Isik   |
+    When Kullanıcı 3 idli talebeyi "Emre" "Yavuzz" olarak güncellemek istediğinde
+    Then Geriye başarılı status kodu dönmesi
+    Then Talebe listesi toplam 9 adet talebe içermelidir
+    Then 3 idli talebenin adı "Emre" soyadı "Yavuzz" olmalıdır
+
+  Scenario: Talebe Güncelleme işlemi yapıldığında seçilen talebenin güncellemesinin başarısız olması
+    Given Aşağıdaki talebeler eklenmiş olsun
+      | id | adi         | soyadi |
+      | 1  | Veli        | Cam    |
+      | 2  | Abdurrahman | Kutlu  |
+      | 3  | Emre        | Yavuz  |
+      | 4  | Bektas      | Isik   |
+    When Kullanıcı 1 idli talebeyi hatalı şekilde güncellemek istediğinde
+    Then Geriye başarısız status kodu dönmesi
+    Then 1 idli talebenin adı "Veli" soyadı "Cam" olmalıdır
+
+  Scenario: Talebe Silme işlemi yapıldığında silmenin başarılı olması ve listede silinen talebenin olmaması
+    Given Aşağıdaki talebeler eklenmiş olsun
+      | id | adi         | soyadi |
+      | 1  | Veli        | Cam    |
+      | 2  | Abdurrahman | Kutlu  |
+      | 3  | Emre        | Yavuz  |
+      | 4  | Bektas      | Isik   |
+    When Kullanıcı 3 idli talebeyi silmek istediğinde
+    Then Geriye başarılı status kodu dönmesi
+
+
+#  Scenario Outline: talebe eklemesindeki hatalı kayıtların kontrolü
+#    When Kullanıcı talebenin Adını "<adi>" Soyadını "<soyadi>" olarak hatalı şekilde kaydetmek istediğinde
+#    Then Kullanıcı talebe kayıt işleminin başarısız olduğunu görür
 #    Examples:
 #      | adi | soyadi |
-#      | as  | 23     |
+#      | as  | as     |
 #      |     | asd    |
 #      | asd |        |
 #      |     |        |
-#    Then "417" hatası vermeli
+#      | "   | .      |
 #
-#  Scenario: Talebeler listesinini talep ederken olumlu cevap dönmesi
-#    Given X,Y,Z talebeleri eklenmiş olsun
-#    When Talebe listesi görüntülenmek istendiğinde
-#    Then İşlem başarılı bir şekilde tamamlanmalı
-#    And Geriye 200 http durum kodu dönmesi
-#    And Talebe Listesini Dönmesi
-#
-#  Scenario: Talebe listesine ekleme yapıldığı zaman olumlu cevap dönmesi
-#    Given Talebenin adı soyadı girilmiş olmalı
-#    When Ekle tuşuna basıldğı zaman
-#    Then İşlem başarılı bir şekilde tamamlanmalı
-#    And Geriye 200 http durum kodu dönmesi
-#    And Talebe Listesini Dönmesi
-#
-#  Scenario: Talebe silme işlemi yapıldığı zaman olumlu cevap vermesi
-#    Given X,Y,Z talebeleri eklenmiş olsun
-#    When X adlı talebe silinmek istendiği zaman
-#    Then İşlem başarılı bir şekilde tamamlanmalı
-#    And Geriye 200 http durum kodu dönmesi
-#    And Talebe Listesini Dönmesi
-#
-#  Scenario: Talebeler listesinini talep ederken olumlu cevap dönmesi
-#    Given X,Y,Z talebeleri eklenmiş olsun
-#    When Y adlı talebe güncellenmek istendiği zaman
-#    Then İşlem başarılı bir şekilde tamamlanmalı
-#    And Geriye 200 http durum kodu dönmesi
-#    And Talebe Listesini Dönmesi

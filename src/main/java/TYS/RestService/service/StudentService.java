@@ -18,9 +18,9 @@ public class StudentService {
     }
 
     public StudentService() {
-        students.add(new Student(getSequence(), "Veli", "Çam"));
-        students.add(new Student(getSequence(), "Abdurrahman", "Kutlu"));
-        students.add(new Student(getSequence(), "Emre", "Yavuz"));
+//        students.add(new Student(getSequence(), "Veli", "Çam"));
+//        students.add(new Student(getSequence(), "Abdurrahman", "Kutlu"));
+//        students.add(new Student(getSequence(), "Emre", "Yavuz"));
     }
 
     public List<Student> getStudents() {
@@ -31,20 +31,21 @@ public class StudentService {
         return students.stream().filter(student -> student.getId() == studentId).findFirst().orElseThrow();
     }
 
-    public void addStudent(@NotNull StudentCreateDTO studentCreateDTO) throws IllegalArgumentException {
+    public Student addStudent(@NotNull StudentCreateDTO studentCreateDTO) throws IllegalArgumentException {
         validateStudent(studentCreateDTO.getName(), studentCreateDTO.getSurname());
         Student student = new Student(getSequence(), studentCreateDTO.getName(), studentCreateDTO.getSurname());
         students.add(student);
+        return student;
     }
 
-    private void validateStudent(String name, String surname) throws  IllegalArgumentException {
+    public void validateStudent(String name, String surname) throws  IllegalArgumentException {
         if (!(isValidName(name, surname))) {
             //todo
             throw new IllegalArgumentException();
         }
     }
 
-    private boolean isValidName(String name, String surname) {
+    public boolean isValidName(String name, String surname) {
         if (name != null && name.length() > 2 && name.length() < 20 && name.matches("[a-zA-Z ğüşöçıİĞÜŞÖÇ]+\\S\\D\\Z")) {
             return surname != null && surname.length() >= 2 && surname.length() < 20 && surname.matches("[a-zA-Z ğüşöçıİĞÜŞÖÇ]+\\D\\Z");
         }
