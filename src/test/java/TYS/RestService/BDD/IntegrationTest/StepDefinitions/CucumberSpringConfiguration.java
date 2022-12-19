@@ -1,4 +1,4 @@
-package TYS.RestService.BDD.IntegrationTest.Runner;
+package TYS.RestService.BDD.IntegrationTest.StepDefinitions;
 
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

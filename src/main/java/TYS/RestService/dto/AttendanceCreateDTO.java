@@ -9,8 +9,15 @@ public class AttendanceCreateDTO {
     public String getPrayerTime() {
         return prayerTime;
     }
+    public void setPrayerTime(String prayerTime) {
+        this.prayerTime = prayerTime;
+    }
 
     public List<StudentAttendanceCreateDto> getStudentAttendanceDto() {
         return studentAttendanceDto;
     }
+    public void setStudentAttendanceDto(List<StudentAttendanceCreateDto> studentAttendanceDto) {
+        this.studentAttendanceDto = studentAttendanceDto;
+    }
+
 }

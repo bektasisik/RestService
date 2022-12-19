@@ -27,7 +27,6 @@ import java.util.Map;
 import static io.cucumber.spring.CucumberTestContext.SCOPE_CUCUMBER_GLUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Scope(SCOPE_CUCUMBER_GLUE)
 @WebMvcTest(controllers = StudentController.class)
@@ -38,7 +37,7 @@ public class StudentStepDefinitions extends CucumberIntegrationTest {
     @Autowired
     @MockBean
     StudentService studentService;
-    ResultActions result;
+    ;
     StudentCreateDTO studentCreateDTO;
     String requestBody;
     @Autowired
@@ -55,6 +54,7 @@ public class StudentStepDefinitions extends CucumberIntegrationTest {
 
     @Given("Aşağıdaki talebeler eklenmiş olsun")
     public void asagidakiTalebelerEklenmisOlsun(@NotNull DataTable table) {
+        scenerioContext.setContext("beforeListSize", studentService.getStudents().size());
         List<Map<String, String>> rows = table.asMaps(String.class, String.class);
 
         for (Map<String, String> columns : rows) {
@@ -64,12 +64,13 @@ public class StudentStepDefinitions extends CucumberIntegrationTest {
     }
 
     /* @When  */
-    @When("Talebe listesi görüntülenmek istediğinde")
+    @When("Kullanıcı talebeler listesini talep ettiğinde")
     public void talebeListesiGoruntulenmekIstediginde() throws Exception {
-        result = mockMvc.perform(get("/api/v1/students")
+        ResultActions result = mockMvc.perform(get("/api/v1/students")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print());
+        scenerioContext.setContext("result", result);
 
     }
 
@@ -82,11 +83,12 @@ public class StudentStepDefinitions extends CucumberIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         requestBody = objectMapper.writeValueAsString(studentCreateDTO);
 
-        result = mockMvc.perform(post("/api/v1/students")
+        ResultActions result = mockMvc.perform(post("/api/v1/students")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print());
+        scenerioContext.setContext("result", result);
     }
 
     @When("Kullanıcı {string} idli talebeyi silmek isteiğinde")
@@ -95,13 +97,14 @@ public class StudentStepDefinitions extends CucumberIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         requestBody = objectMapper.writeValueAsString(studentId);
 
-        result = mockMvc.perform(delete("/api/v1/students/{studentId}", studentId)
+        ResultActions result = mockMvc.perform(delete("/api/v1/students/{studentId}", studentId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print());
+        scenerioContext.setContext("result", result);
     }
 
-    @When("Kullanıcı {int} idli talebeyi {string} {string} olarak güncellemek istediğinde")
+    @When("Kullanıcı {int} idli talebeyi {string} adi {string} soyadi olarak güncellemek istediğinde")
     public void kullaniciIdliTalebeyiOlarakGuncellemekIstediginde(int studentId, String name, String surname) throws Exception {
         Student student = (Student) scenerioContext.getContext(String.valueOf(studentId));
         student.setName(name);
@@ -110,36 +113,64 @@ public class StudentStepDefinitions extends CucumberIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         requestBody = objectMapper.writeValueAsString(student);
 
-        result = mockMvc.perform(put("/api/v1/students/{studentId}", studentId)
+        ResultActions result = mockMvc.perform(put("/api/v1/students/{studentId}", studentId)
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print());
+        scenerioContext.setContext("result", result);
     }
 
     @When("Kullanıcı {int} idli talebeyi silmek istediğinde")
     public void kullaniciIdliTalebeyiSilmekIstediginde(int studentId) throws Exception {
-        result = mockMvc.perform(delete("/api/v1/students/{studentId}", studentId)
+        ResultActions result = mockMvc.perform(delete("/api/v1/students/{studentId}", studentId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print());
+        scenerioContext.setContext("result", result);
     }
 
     @When("Kullanıcı talebenin Adını {string} Soyadını {string} olarak hatalı şekilde kaydetmek istediğinde")
     public void kullaniciTalebeninAdiniSoyadiniOlarakHataliSekildeKaydetmekIstediginde(String name, String surname) throws Exception {
-        try{
-            studentService.validateStudent(name, surname);
-        }catch (Exception e){
-            scenerioContext.setContext("error", e.getMessage());
+        try {
+            studentCreateDTO = new StudentCreateDTO();
+            studentCreateDTO.setName(name);
+            studentCreateDTO.setSurname(surname);
+            Student student = studentService.addStudent(studentCreateDTO);
+            student.setName(name);
+            student.setSurname(surname);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            requestBody = objectMapper.writeValueAsString(student);
+
+            ResultActions result = mockMvc.perform(post("/api/v1/students")
+                            .content(requestBody)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andDo(print());
+            scenerioContext.setContext("result", result);
+        } catch (Exception e) {
+            scenerioContext.setContext("error", "Name and Surname must be filled");
         }
     }
 
     @When("Kullanıcı {int} idli talebeyi hatalı şekilde güncellemek istediğinde")
     public void kullaniciIdliTalebeyiHataliSekildeGuncellemekIstediginde(int studentId) throws Exception {
-        Student student = (Student) scenerioContext.getContext(String.valueOf(studentId));
-        try{
-            studentService.validateStudent(student.getName(), student.getSurname());
-        }catch (Exception e){
+        try {
+            Student student = (Student) scenerioContext.getContext(String.valueOf(studentId));
+            student.setName(null);
+            student.setSurname(null);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            requestBody = objectMapper.writeValueAsString(student);
+
+            ResultActions result = mockMvc.perform(put("/api/v1/students/{studentId}", studentId)
+                            .content(requestBody)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andDo(print());
+            scenerioContext.setContext("result", result);
+        } catch (Exception e) {
             scenerioContext.setContext("error", "Name and Surname must be filled");
         }
     }
@@ -147,34 +178,29 @@ public class StudentStepDefinitions extends CucumberIntegrationTest {
     /* @Then  */
     @Then("Talebe listesi toplam {int} adet talebe içermelidir")
     public void talebeListesiToplamAdetTalebeIcermelidir(int expectedSize) throws Exception {
-        result.andExpect(status().isOk())
-                .andDo(print());
+        int beforeListSize = (int) scenerioContext.getContext("beforeListSize");
         List<Student> students = studentService.getStudents();
-        Assert.assertEquals(expectedSize, students.size());
+        Assert.assertEquals(expectedSize + beforeListSize, students.size());
     }
 
-    @Then("Kullanıcı talebe kayıt işleminin başarısız olduğunu görür")
-    public void kullaniciTalebeKayitIslemininBasarisizOldugunuGorur() throws Exception {
-        result.andExpect(status().is4xxClientError())
-                .andDo(print());
-    }
-
-    @Then("Geriye başarılı status kodu dönmesi")
+    @Then("İşlemin başarılı olarak gerçekleşmesi beklenir")
     public void basariliStatusKoduDonmesi() throws Exception {
-        result.andExpect(status().is2xxSuccessful());
+        ResultActions result = (ResultActions) scenerioContext.getContext("result");
+        Assert.assertEquals(200, result.andReturn().getResponse().getStatus());
 
     }
 
     @Then("{int} idli talebenin adı {string} soyadı {string} olmalıdır")
-    public void idliTalebeninAdiSoyadiOlmalidir(int studentId, String name, String surname) throws Exception {
+    public void idliTalebeninAdiSoyadiOlmalidir(int studentId, String name, String surname) {
         Student student = (Student) scenerioContext.getContext(String.valueOf(studentId));
         Assert.assertEquals(name, student.getName());
         Assert.assertEquals(surname, student.getSurname());
     }
 
     @Then("Geriye başarısız status kodu dönmesi")
-    public void geriyeBasarisizStatusKoduDonmesi() throws Exception {
-        //TODO: Burada hata mesajı kontrolü yapılacak
-//        result.andExpect(status().is4xxClientError());
+    public void geriyeBasarisizStatusKoduDonmesi() {
+        scenerioContext.getContext("error");
+        Assert.assertEquals("Name and Surname must be filled", scenerioContext.getContext("error"));
     }
+
 }

@@ -18,9 +18,9 @@ public class StudentService {
     }
 
     public StudentService() {
-//        students.add(new Student(getSequence(), "Veli", "Çam"));
-//        students.add(new Student(getSequence(), "Abdurrahman", "Kutlu"));
-//        students.add(new Student(getSequence(), "Emre", "Yavuz"));
+        students.add(new Student(getSequence(), "Veli", "Çam"));
+        students.add(new Student(getSequence(), "Abdurrahman", "Kutlu"));
+        students.add(new Student(getSequence(), "Emre", "Yavuz"));
     }
 
     public List<Student> getStudents() {
