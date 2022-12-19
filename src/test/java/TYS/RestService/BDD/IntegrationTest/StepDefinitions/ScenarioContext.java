@@ -1,4 +1,4 @@
-package TYS.RestService.BDD.IntegrationTest.service;
+package TYS.RestService.BDD.IntegrationTest.StepDefinitions;
 
 import org.springframework.stereotype.Service;
 

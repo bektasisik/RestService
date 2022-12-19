@@ -1,4 +1,4 @@
-Feature: Attendance Servis işlemlerine olumlu yanıt verme
+Feature: Attendance CRUD işlemleri
 
   Background:
     Given Aşağıdaki talebeler listeye eklenmiş olsun

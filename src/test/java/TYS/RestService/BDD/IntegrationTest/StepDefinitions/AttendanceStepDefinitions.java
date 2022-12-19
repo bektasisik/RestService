@@ -1,7 +1,6 @@
 package TYS.RestService.BDD.IntegrationTest.StepDefinitions;
 
 import TYS.RestService.BDD.IntegrationTest.Runner.CucumberIntegrationTest;
-import TYS.RestService.BDD.IntegrationTest.service.ScenarioContext;
 import TYS.RestService.domain.Attendance;
 import TYS.RestService.domain.Student;
 import TYS.RestService.dto.AttendanceCreateDTO;
@@ -15,7 +14,6 @@ import io.cucumber.java.en.When;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,11 +33,7 @@ public class AttendanceStepDefinitions extends CucumberIntegrationTest {
     MockMvc mockMvc;
 
     @Autowired
-    @MockBean
     AttendanceService attendanceService;
-
-    String requestBody;
-    AttendanceCreateDTO attendanceCreateDTO;
     @Autowired
     StudentStepDefinitions studentStepDefinitions;
 
@@ -85,7 +79,8 @@ public class AttendanceStepDefinitions extends CucumberIntegrationTest {
 
     @When("{string} vakti için mevcut talebelerin yoklamaları alındığı zaman")
     public void vaktiIcinMevcutTalebelerinYoklamalariAlindigiZaman(String prayerTime, @NotNull DataTable table) throws Exception {
-        attendanceCreateDTO = new AttendanceCreateDTO();
+        AttendanceCreateDTO attendanceCreateDTO = new AttendanceCreateDTO();
+        scenerioContext.setContext("attendanceCreateDTO",attendanceCreateDTO);
         attendanceCreateDTO.setPrayerTime(prayerTime);
         List<Map<String, String>> rows = table.asMaps(String.class, String.class);
 
@@ -97,7 +92,7 @@ public class AttendanceStepDefinitions extends CucumberIntegrationTest {
                             Boolean.getBoolean(columns.get("durum")))));
         }
         ObjectMapper objectMapper = new ObjectMapper();
-        requestBody = objectMapper.writeValueAsString(attendanceCreateDTO);
+        String requestBody = objectMapper.writeValueAsString(attendanceCreateDTO);
 
         ResultActions result = mockMvc.perform(post("/api/v1/attendances")
                         .content(requestBody)
@@ -129,7 +124,7 @@ public class AttendanceStepDefinitions extends CucumberIntegrationTest {
         scenerioContext.setContext(String.valueOf(table.columns(Integer.parseInt("index"))), attendance);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        requestBody = objectMapper.writeValueAsString(attendanceCreateDTO);
+        String requestBody = objectMapper.writeValueAsString(scenerioContext.getContext("attendanceCreateDTO"));
 
         ResultActions result = mockMvc.perform(put("/api/v1/attendances/{attendanceId}", attendance.getId())
                         .content(requestBody)
@@ -148,6 +143,7 @@ public class AttendanceStepDefinitions extends CucumberIntegrationTest {
 
     @Then("Yoklamada yok yazılan talebelerin toplam devamsızlığı {int} artmalı")
     public void yoklamadaYokYazilanTalebelerinToplamDevamsizligiArtmali(int absence) {
+        AttendanceCreateDTO attendanceCreateDTO = (AttendanceCreateDTO) scenerioContext.getContext("attendanceCreateDTO");
         for (int i = 0; i < attendanceCreateDTO.getStudentAttendanceDto().size(); i++) {
             if (!attendanceCreateDTO.getStudentAttendanceDto().get(i).getIsAbsence()) {
                 Student student = (Student) scenerioContext.getContext(String.valueOf(i));
@@ -158,6 +154,7 @@ public class AttendanceStepDefinitions extends CucumberIntegrationTest {
 
     @Then("Silinen yoklamada yok yazılan talebelerin toplam devamsızlığı bir azaltılmalı")
     public void silinenYoklamadaYokYazilanTalebelerinToplamDevamsizligiBirAzaltilmali() {
+        AttendanceCreateDTO attendanceCreateDTO = (AttendanceCreateDTO) scenerioContext.getContext("attendanceCreateDTO");
         for (int i = 0; i < attendanceCreateDTO.getStudentAttendanceDto().size(); i++) {
             if (!attendanceCreateDTO.getStudentAttendanceDto().get(i).getIsAbsence()) {
                 Student student = (Student) scenerioContext.getContext(String.valueOf(i));

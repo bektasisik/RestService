@@ -2,13 +2,11 @@ package TYS.RestService.BDD.IntegrationTest.StepDefinitions;
 
 
 import TYS.RestService.BDD.IntegrationTest.Runner.CucumberIntegrationTest;
-import TYS.RestService.BDD.IntegrationTest.service.ScenarioContext;
 import TYS.RestService.domain.Attendance;
 import TYS.RestService.domain.Student;
 import TYS.RestService.service.StudentAttendanceService;
 import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,7 +23,6 @@ public class StudentAttendanceStepDefinitions extends CucumberIntegrationTest {
     MockMvc mockMvc;
 
     @Autowired
-    @MockBean
     StudentAttendanceService studentAttendanceService;
 
     @Autowired

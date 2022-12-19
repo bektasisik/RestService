@@ -1,10 +1,8 @@
 package TYS.RestService.BDD.IntegrationTest.StepDefinitions;
 
 import TYS.RestService.BDD.IntegrationTest.Runner.CucumberIntegrationTest;
-import TYS.RestService.BDD.IntegrationTest.service.ScenarioContext;
 import TYS.RestService.domain.Student;
 import TYS.RestService.dto.StudentCreateDTO;
-import TYS.RestService.rest.StudentController;
 import TYS.RestService.service.StudentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.datatable.DataTable;
@@ -14,8 +12,6 @@ import io.cucumber.java.en.When;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,15 +25,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @Scope(SCOPE_CUCUMBER_GLUE)
-@WebMvcTest(controllers = StudentController.class)
 public class StudentStepDefinitions extends CucumberIntegrationTest {
     @Autowired
     MockMvc mockMvc;
 
     @Autowired
-    @MockBean
     StudentService studentService;
-    ;
     StudentCreateDTO studentCreateDTO;
     String requestBody;
     @Autowired
