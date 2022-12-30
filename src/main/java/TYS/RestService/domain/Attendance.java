@@ -29,13 +29,4 @@ public class Attendance {
         this.id = id;
         this.prayerTime = prayerTime;
     }
-
-    @Override
-    public String toString() {
-        return "Attendance{" +
-                "id=" + id +
-                ", prayerTime='" + prayerTime + '\'' +
-                ", date='" + date + '\'' +
-                '}';
-    }
 }

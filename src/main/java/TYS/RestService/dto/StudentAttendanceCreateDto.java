@@ -11,4 +11,16 @@ public class StudentAttendanceCreateDto {
     public Boolean getIsAbsence() {
         return isAbsence;
     }
+
+    public void setStudentId(int studentId) {
+        this.studentId = studentId;
+    }
+    public void setIsAbsence(Boolean isAbsence) {
+        this.isAbsence = isAbsence;
+    }
+
+    public StudentAttendanceCreateDto(int studentId, boolean isAbsence){
+        this.studentId = studentId;
+        this.isAbsence = isAbsence;
+    }
 }
